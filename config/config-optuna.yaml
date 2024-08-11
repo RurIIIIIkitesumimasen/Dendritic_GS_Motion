@@ -1,0 +1,61 @@
+batch_size: 128
+data:
+  img_size: 1, 2, 4, 8, 16, 32, 64, 128
+  is_noise: false
+  noise_num: ''
+  object_array:
+  - 1
+  - 2
+  - 4
+  - 8
+  - 16
+  - 32
+  - 64
+  - 128
+  path: ''
+datarate: 75
+defaults:
+- override hydra/sweeper: optuna
+- override hydra/sweeper/sampler: tpe
+epoch: 800
+hydra:
+  sweeper:
+    _target_: hydra_plugins.hydra_optuna_sweeper.optuna_sweeper.OptunaSweeper
+    direction: minimize
+    n_trials: 500
+    params:
+      data.object_array: choice([2],[3],[4],[8],[12],[16],[32],[3, 4, 8, 12, 16, 32])
+      model.k: range(10, 100, step=1)
+      optimizer.lr: range(0.00001, 0.001, step=0.00001)
+    sampler:
+      _target_: optuna.samplers.TPESampler
+      seed: 96
+    study_name: sphere
+loss: CrossEntropy
+model:
+  dendrite: 1
+  init_q: 0.01
+  init_w_add: 0.01
+  init_w_mul: 0.001
+  k: 10
+  name: Dmodel
+model_num_seed: 96
+modeltype: AVS
+optimizer:
+  lr: 0.003
+  name: Adam
+  weight_decay: 1.0e-06
+runtime: 9
+scheduler:
+  T_max: 1000
+  eta_min: 1.0e-06
+  name: CosineAnnealingLR
+seed: 22
+testdstype: original0
+wandb:
+  entity: ruriiiii
+  experiment_name: train_mixed
+  group_name: Lobject_motion
+  is_save_code: false
+  is_sweep: false
+  project_name: GS_Motion_Validation
